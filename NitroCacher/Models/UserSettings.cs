@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace NitroCacher.Models
 {
@@ -33,8 +34,30 @@ namespace NitroCacher.Models
         public List<string> HeadersToIgnore { get; set; }
         public bool IsEnabled { get; set; }
         public bool IsShownInUi { get; set; }
+
+
+        [XmlIgnore]
         public Color BackgroundColor { get; set; }
+        
+        [XmlIgnore]
         public Color ForegroundColor { get; set; }
+
+
+
+        [XmlElement("BackgroundColor")]
+        public string BackgroundColorHtml
+        {
+            get { return ColorTranslator.ToHtml(BackgroundColor); }
+            set { BackgroundColor = ColorTranslator.FromHtml(value); }
+        }
+
+
+        [XmlElement("ForegroundColor")]
+        public string ForegroundColorHtml
+        {
+            get { return ColorTranslator.ToHtml(ForegroundColor); }
+            set { ForegroundColor = ColorTranslator.FromHtml(value); }
+        }
     }
 
     [Serializable]

@@ -37,11 +37,12 @@
             this.lnkEditRule = new System.Windows.Forms.LinkLabel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlProfleNRules = new System.Windows.Forms.Panel();
+            this.lnkClearAllCache = new System.Windows.Forms.LinkLabel();
+            this.lnkClearCacheProfile = new System.Windows.Forms.LinkLabel();
+            this.lnkClearCacheForRule = new System.Windows.Forms.LinkLabel();
+            this.lnkRemoveRule = new System.Windows.Forms.LinkLabel();
             this.pnlRuleSummary = new System.Windows.Forms.Panel();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.lnkClearCacheForRule = new System.Windows.Forms.LinkLabel();
-            this.lnkClearCacheProfile = new System.Windows.Forms.LinkLabel();
-            this.lnkClearAllCache = new System.Windows.Forms.LinkLabel();
             this.chkEnabled = new System.Windows.Forms.CheckBox();
             this.pnlProfleNRules.SuspendLayout();
             this.pnlRuleSummary.SuspendLayout();
@@ -71,7 +72,7 @@
             // 
             this.lnkAddNewProfile.AutoSize = true;
             this.lnkAddNewProfile.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkAddNewProfile.Location = new System.Drawing.Point(265, 26);
+            this.lnkAddNewProfile.Location = new System.Drawing.Point(151, 27);
             this.lnkAddNewProfile.Name = "lnkAddNewProfile";
             this.lnkAddNewProfile.Size = new System.Drawing.Size(94, 15);
             this.lnkAddNewProfile.TabIndex = 2;
@@ -86,8 +87,10 @@
             this.lstRules.FormattingEnabled = true;
             this.lstRules.Location = new System.Drawing.Point(20, 115);
             this.lstRules.Name = "lstRules";
-            this.lstRules.Size = new System.Drawing.Size(434, 259);
+            this.lstRules.Size = new System.Drawing.Size(434, 292);
             this.lstRules.TabIndex = 3;
+            this.lstRules.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.lstRules_ItemCheck);
+            this.lstRules.SelectedIndexChanged += new System.EventHandler(this.lstRules_SelectedIndexChanged);
             // 
             // lblRules
             // 
@@ -103,7 +106,7 @@
             // 
             this.lnkAddNewRule.AutoSize = true;
             this.lnkAddNewRule.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkAddNewRule.Location = new System.Drawing.Point(114, 97);
+            this.lnkAddNewRule.Location = new System.Drawing.Point(17, 416);
             this.lnkAddNewRule.Name = "lnkAddNewRule";
             this.lnkAddNewRule.Size = new System.Drawing.Size(57, 15);
             this.lnkAddNewRule.TabIndex = 2;
@@ -116,7 +119,7 @@
             // 
             this.lnkEditRule.AutoSize = true;
             this.lnkEditRule.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkEditRule.Location = new System.Drawing.Point(175, 97);
+            this.lnkEditRule.Location = new System.Drawing.Point(397, 416);
             this.lnkEditRule.Name = "lnkEditRule";
             this.lnkEditRule.Size = new System.Drawing.Size(57, 15);
             this.lnkEditRule.TabIndex = 2;
@@ -144,6 +147,7 @@
             this.pnlProfleNRules.Controls.Add(this.lstProfiles);
             this.pnlProfleNRules.Controls.Add(this.lnkClearCacheProfile);
             this.pnlProfleNRules.Controls.Add(this.lnkClearCacheForRule);
+            this.pnlProfleNRules.Controls.Add(this.lnkRemoveRule);
             this.pnlProfleNRules.Controls.Add(this.lnkAddNewRule);
             this.pnlProfleNRules.Controls.Add(this.lnkEditRule);
             this.pnlProfleNRules.Controls.Add(this.lblProfiles);
@@ -151,6 +155,58 @@
             this.pnlProfleNRules.Name = "pnlProfleNRules";
             this.pnlProfleNRules.Size = new System.Drawing.Size(468, 477);
             this.pnlProfleNRules.TabIndex = 4;
+            // 
+            // lnkClearAllCache
+            // 
+            this.lnkClearAllCache.AutoSize = true;
+            this.lnkClearAllCache.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkClearAllCache.Location = new System.Drawing.Point(251, 27);
+            this.lnkClearAllCache.Name = "lnkClearAllCache";
+            this.lnkClearAllCache.Size = new System.Drawing.Size(90, 15);
+            this.lnkClearAllCache.TabIndex = 2;
+            this.lnkClearAllCache.TabStop = true;
+            this.lnkClearAllCache.Text = "Clear All Cache";
+            this.lnkClearAllCache.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lnkClearAllCache.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearAllCache_LinkClicked);
+            // 
+            // lnkClearCacheProfile
+            // 
+            this.lnkClearCacheProfile.AutoSize = true;
+            this.lnkClearCacheProfile.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkClearCacheProfile.Location = new System.Drawing.Point(342, 27);
+            this.lnkClearCacheProfile.Name = "lnkClearCacheProfile";
+            this.lnkClearCacheProfile.Size = new System.Drawing.Size(112, 15);
+            this.lnkClearCacheProfile.TabIndex = 2;
+            this.lnkClearCacheProfile.TabStop = true;
+            this.lnkClearCacheProfile.Text = "Clear Profile Cache";
+            this.lnkClearCacheProfile.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lnkClearCacheProfile.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearCacheProfile_LinkClicked);
+            // 
+            // lnkClearCacheForRule
+            // 
+            this.lnkClearCacheForRule.AutoSize = true;
+            this.lnkClearCacheForRule.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkClearCacheForRule.Location = new System.Drawing.Point(351, 448);
+            this.lnkClearCacheForRule.Name = "lnkClearCacheForRule";
+            this.lnkClearCacheForRule.Size = new System.Drawing.Size(103, 15);
+            this.lnkClearCacheForRule.TabIndex = 2;
+            this.lnkClearCacheForRule.TabStop = true;
+            this.lnkClearCacheForRule.Text = "Clear Rule Cache";
+            this.lnkClearCacheForRule.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lnkClearCacheForRule.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearCacheForRule_LinkClicked);
+            // 
+            // lnkRemoveRule
+            // 
+            this.lnkRemoveRule.AutoSize = true;
+            this.lnkRemoveRule.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lnkRemoveRule.Location = new System.Drawing.Point(17, 448);
+            this.lnkRemoveRule.Name = "lnkRemoveRule";
+            this.lnkRemoveRule.Size = new System.Drawing.Size(82, 15);
+            this.lnkRemoveRule.TabIndex = 2;
+            this.lnkRemoveRule.TabStop = true;
+            this.lnkRemoveRule.Text = "Remove Rule";
+            this.lnkRemoveRule.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lnkRemoveRule.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRemoveRule_LinkClicked);
             // 
             // pnlRuleSummary
             // 
@@ -171,45 +227,6 @@
             this.lblTitle.TabIndex = 6;
             this.lblTitle.Text = "🚀 Nitro Cacher";
             // 
-            // lnkClearCacheForRule
-            // 
-            this.lnkClearCacheForRule.AutoSize = true;
-            this.lnkClearCacheForRule.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkClearCacheForRule.Location = new System.Drawing.Point(236, 97);
-            this.lnkClearCacheForRule.Name = "lnkClearCacheForRule";
-            this.lnkClearCacheForRule.Size = new System.Drawing.Size(103, 15);
-            this.lnkClearCacheForRule.TabIndex = 2;
-            this.lnkClearCacheForRule.TabStop = true;
-            this.lnkClearCacheForRule.Text = "Clear Rule Cache";
-            this.lnkClearCacheForRule.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lnkClearCacheForRule.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearCacheForRule_LinkClicked);
-            // 
-            // lnkClearCacheProfile
-            // 
-            this.lnkClearCacheProfile.AutoSize = true;
-            this.lnkClearCacheProfile.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkClearCacheProfile.Location = new System.Drawing.Point(343, 97);
-            this.lnkClearCacheProfile.Name = "lnkClearCacheProfile";
-            this.lnkClearCacheProfile.Size = new System.Drawing.Size(112, 15);
-            this.lnkClearCacheProfile.TabIndex = 2;
-            this.lnkClearCacheProfile.TabStop = true;
-            this.lnkClearCacheProfile.Text = "Clear Profile Cache";
-            this.lnkClearCacheProfile.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lnkClearCacheProfile.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearCacheProfile_LinkClicked);
-            // 
-            // lnkClearAllCache
-            // 
-            this.lnkClearAllCache.AutoSize = true;
-            this.lnkClearAllCache.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lnkClearAllCache.Location = new System.Drawing.Point(364, 26);
-            this.lnkClearAllCache.Name = "lnkClearAllCache";
-            this.lnkClearAllCache.Size = new System.Drawing.Size(90, 15);
-            this.lnkClearAllCache.TabIndex = 2;
-            this.lnkClearAllCache.TabStop = true;
-            this.lnkClearAllCache.Text = "Clear All Cache";
-            this.lnkClearAllCache.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.lnkClearAllCache.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClearAllCache_LinkClicked);
-            // 
             // chkEnabled
             // 
             this.chkEnabled.AutoSize = true;
@@ -220,6 +237,7 @@
             this.chkEnabled.TabIndex = 7;
             this.chkEnabled.Text = "Enabled";
             this.chkEnabled.UseVisualStyleBackColor = true;
+            this.chkEnabled.CheckedChanged += new System.EventHandler(this.chkEnabled_CheckedChanged);
             // 
             // Home
             // 
@@ -232,6 +250,7 @@
             this.Controls.Add(this.pnlProfleNRules);
             this.Name = "Home";
             this.Size = new System.Drawing.Size(883, 623);
+            this.Load += new System.EventHandler(this.Home_Load);
             this.pnlProfleNRules.ResumeLayout(false);
             this.pnlProfleNRules.PerformLayout();
             this.pnlRuleSummary.ResumeLayout(false);
@@ -258,5 +277,6 @@
         private System.Windows.Forms.LinkLabel lnkClearCacheForRule;
         private System.Windows.Forms.LinkLabel lnkClearAllCache;
         private System.Windows.Forms.CheckBox chkEnabled;
+        private System.Windows.Forms.LinkLabel lnkRemoveRule;
     }
 }

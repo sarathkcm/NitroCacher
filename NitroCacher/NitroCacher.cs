@@ -14,13 +14,21 @@ using System.Windows.Forms;
 [assembly: Fiddler.RequiredVersion("2.3.5.0")]
 namespace NitroCacher
 {
+
+   
     public class NitroCacher : IAutoTamper
     {
+
+        const string disabledIconBase64 = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAz0lEQVQ4T62TMQ7CMAxF/19ScQsmdsTMwsJFoGJD6tSeoJkqMYEKF2Fh6YyYYeIWKFmMUlFUVYBo02yOv5/txCYaJ03TMYCQ5AzA8OW+i8gJQJ4kyaUewsrIsmxgrd0AWAB43zf4AuCglFpHUfRwvlLogo0xR5LTZkWfbBEpgiCYO0gJ0FrnAJb/BNc0+ziOQ7qeSZ5/lP2NKyIycYAtyVXL7KVcRHbUWl8BjLoAANwcwABQHQG2F4BfC96P6P2N3oPUyyhXkM7LVJ+Btuv8BPdOcfmKn4mVAAAAAElFTkSuQmCC";
+        const string enabledIconBase64 = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwklEQVQ4T63TvU5CQRCG4WcwMfEuqOgNtQ2Nd4CxV2LHtVhJ0N7AHdjQUBtrrLwLA4ks2Rx+/Qucw3Y78807M7sz4ft5dq6mI7RQX7o/JCNzfdfetkNifRk6k9wLN9jYdxMkyZPQ1faZXYUwB/OCix8V/W4Y4zJDCsBAX7jdM7iQJY+udELu+cTrP2X/xU2+NMPAg3B3UPaVOOmFoQkapQC8Z8AUpyUBs6MAKrZQ+RErf2PlQTrKKK8gpZdpewgOXOcFTTxEjYwMoIkAAAAASUVORK5CYII=";
+
         UserSettings _userSettings;
         IConfigManager _configManager;
 
 
         List<CachingRule> _cacheRules;
+        bool Enabled => _userSettings != null && _userSettings.Enabled;
+        List<CachingRule> CacheRules => _cacheRules.Where(r => r.ProfileId == _userSettings.SelectedProfileId).ToList();
         public void AutoTamperRequestAfter(Session oSession)
         {
 
@@ -28,7 +36,7 @@ namespace NitroCacher
 
         public void AutoTamperRequestBefore(Session oSession)
         {
-            if (!_userSettings.Enabled) { return; }
+            if (!Enabled) { return; }
             var matchingRules = FindMatchingRules(oSession);
             if (matchingRules.Count() == 0) return;
 
@@ -41,32 +49,41 @@ namespace NitroCacher
                 oSession.utilCreateResponseAndBypassServer();
                 var responseString = firstMatchedRule.Cache.Get<string>(hash);
                 var response = Utils.XmlDeSerialize<HttpResponse>(responseString);
-                response.Headers.ForEach(h => oSession.ResponseHeaders.Add(h.Item1, h.Item2));
+                response.Headers.ForEach(h => oSession.ResponseHeaders.Add(h.Key, h.Value));
                 oSession["ui-backcolor"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.BackgroundColor.ToArgb()));
                 oSession["ui-color"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.ForegroundColor.ToArgb()));
                 oSession.utilSetResponseBody(response.Body);
-
+                oSession["NitroCacher.flags.responseServedFromCache"] = "true";
                 matchingRules.ForEach(r => r.Cache.Set(hash, responseString));
                 return;
             }
 
-            oSession["NitroCacher.flags.cache-key"] = string.Join(";", matchingRules.Select(r => Utils.GetHashFromRequest(oSession, r.FilterRule)));
+            oSession["NitroCacher.flags.cacheKey"] = string.Join(";", matchingRules.Select(r => $"{r.FilterRule.Id}/{Utils.GetHashFromRequest(oSession, r.FilterRule)}"));
         }
 
         public void AutoTamperResponseAfter(Session oSession)
         {
-            if (!_userSettings.Enabled) { return; }
+            if (!Enabled || oSession["NitroCacher.flags.responseServedFromCache"] == "true") { return; }
             var matchingRules = FindMatchingRules(oSession);
             if (matchingRules.Count() == 0) return;
             oSession.utilDecodeResponse();
             var oBody = System.Text.Encoding.UTF8.GetString(oSession.responseBodyBytes);
-            var response = new HttpResponse(oSession.ResponseHeaders.Select(h => (h.Name, h.Value)).ToList(), oBody);
-            matchingRules.ForEach(r => r.Cache.Set(oSession["NitroCacher.flags.cache-key"], Utils.XmlSerialize(response)));
+            var response = new HttpResponse(oSession.ResponseHeaders.Select(h => new Header(h.Name, h.Value)).ToList(), oBody);
+            var responseXml = Utils.XmlSerialize(response);
+            oSession["NitroCacher.flags.cacheKey"].Split(';').Select(v => new { CacheId = v.Split('/')[0], CacheKey = v.Split('/')[1] })
+                                                             .ToList()
+                                                             .ForEach(c =>
+                                                             {
+                                                                 var rule = matchingRules
+                                                                                .FirstOrDefault(r => r.FilterRule.Id == c.CacheId);
+                                                                 if (rule == null) return;
+                                                                 rule.Cache.Set(c.CacheKey, responseXml);
+                                                             });
         }
 
         private List<CachingRule> FindMatchingRules(Session oSession)
         {
-            return (_cacheRules ?? new List<CachingRule>()).Where(rule => rule.FilterRule.IsEnabled && Utils.DoesUrlMatch(oSession.url, rule.FilterRule)).ToList();
+            return (CacheRules ?? new List<CachingRule>()).Where(rule => rule.FilterRule.IsEnabled && Utils.DoesUrlMatch(oSession.url, rule.FilterRule)).ToList();
         }
 
         public void AutoTamperResponseBefore(Session oSession)
@@ -107,10 +124,22 @@ namespace NitroCacher
             Action clearAllCache = () => _cacheRules
                 .ForEach(c => c.Cache.Clear());
 
+        
+
             var cacherPage = new TabPage("Nitro Cacher");
-            var cacherControl = new Home(_userSettings, clearCacheForId, clearCacheForProfile, clearAllCache);
+
+
+            Action<bool> toggleIcon = (enabled) =>
+            {
+                var key = enabled ? "NitroCacher.Enabled" : "NitroCacher.Disabled";
+                cacherPage.ImageKey = key;
+            };
+
+            var cacherControl = new Home(_userSettings, clearCacheForId, clearCacheForProfile, clearAllCache, toggleIcon);
             cacherPage.Controls.Add(cacherControl);
             cacherControl.Dock = DockStyle.Fill;
+            FiddlerApplication.UI.imglSessionIcons.Images.Add("NitroCacher.Enabled", enabledIconBase64.ToImage());
+            FiddlerApplication.UI.imglSessionIcons.Images.Add("NitroCacher.Disabled", disabledIconBase64.ToImage());
             FiddlerApplication.UI.tabsViews.TabPages.Add(cacherPage);
         }
     }

@@ -42,6 +42,7 @@ namespace NitroCacher.UI
             chkEnabled.Checked = _rule.IsEnabled;
             lblUiSample.BackColor = pctBackgroundColor.BackColor = _rule.BackgroundColor;
             lblUiSample.ForeColor = pctForegroundColor.BackColor = _rule.ForegroundColor;
+            pnlColorSelection.Enabled = chkShowInUi.Checked;
         }
 
         private void SaveData()
@@ -71,17 +72,20 @@ namespace NitroCacher.UI
             if(result == DialogResult.OK)
             {
                 showColorControl.BackColor = colorBox.Color;
+
             }
         }
 
         private void pctForegroundColor_Click(object sender, EventArgs e)
         {
             SelectColor(pctForegroundColor);
+            lblUiSample.ForeColor = pctForegroundColor.BackColor;
         }
 
         private void pctBackgroundColor_Click(object sender, EventArgs e)
         {
             SelectColor(pctBackgroundColor);
+            lblUiSample.BackColor = pctBackgroundColor.BackColor;
         }
 
         private void btnSave_Click(object sender, EventArgs e)

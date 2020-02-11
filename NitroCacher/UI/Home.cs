@@ -12,19 +12,23 @@ namespace NitroCacher.UI
 {
     public partial class Home : UserControl
     {
+  
+
         UserSettings _userSettings;
         private readonly Action<string> _clearCacheForRule;
         private readonly Action<string> _clearAllCacheForProfile;
         private readonly Action _clearAllCache;
+        private readonly Action<bool> _toggleIcon;
 
         RuleProfile _ruleProfile => _userSettings.RuleProfiles.First(r => r.Id == _userSettings.SelectedProfileId);
 
-        public Home(UserSettings userSettings, Action<string> clearCacheForRule, Action<string> clearAllCacheForProfile, Action clearAllCache)
+        public Home(UserSettings userSettings, Action<string> clearCacheForRule, Action<string> clearAllCacheForProfile, Action clearAllCache, Action<bool> toggleIcon)
         {
             _userSettings = userSettings;
             _clearCacheForRule = clearCacheForRule;
             _clearAllCacheForProfile = clearAllCacheForProfile;
             _clearAllCache = clearAllCache;
+            _toggleIcon = toggleIcon;
             InitializeComponent();
             lstProfiles.DisplayMember = "Name";
             lstRules.DisplayMember = "Name";
@@ -43,14 +47,33 @@ namespace NitroCacher.UI
 
         private void DrawUi()
         {
+            chkEnabled.Checked = _userSettings.Enabled;
+            _toggleIcon(_userSettings.Enabled);
+            PopulateProfilesList();
+            PopulateRulesList();
+            EnableDisableLinks();
+        }
+
+        private void EnableDisableLinks()
+        {
+            lnkAddNewRule.Enabled = lstProfiles.SelectedItem != null;
+            lnkRemoveRule.Enabled = lstProfiles.SelectedItem != null && lstRules.SelectedItem != null;
+            lnkEditRule.Enabled = lstProfiles.SelectedItem != null && lstRules.SelectedItem != null;
+            lnkClearCacheForRule.Enabled = lstProfiles.SelectedItem != null && lstRules.SelectedItem != null;
+            lnkClearCacheProfile.Enabled = lstProfiles.SelectedItem != null;
+
+        }
+
+        private void PopulateProfilesList()
+        {
             lstProfiles.Items.Clear();
             lstProfiles.Items.AddRange(_userSettings.RuleProfiles.ToArray());
-            PopulateRulesList();
+            lstProfiles.SelectedItem = _userSettings.RuleProfiles.FirstOrDefault(f => f.Id == _userSettings.SelectedProfileId);
         }
 
         private void PopulateRulesList()
         {
-            _ruleProfile.Rules.Clear();
+            lstRules.Items.Clear();
             foreach (var rule in _ruleProfile.Rules)
             {
                 lstRules.Items.Add(rule, rule.IsEnabled);
@@ -59,15 +82,16 @@ namespace NitroCacher.UI
 
         private void lnkAddNewProfile_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var newProfileName= GetPromptTextInput("Enter a profile name.", "Enter a profile name.");
-            if(string.IsNullOrWhiteSpace(newProfileName)) { return; }
+            var newProfileName = GetPromptTextInput("Enter a profile name.", "Enter a profile name.");
+            if (string.IsNullOrWhiteSpace(newProfileName)) { return; }
             string newProfileId = Guid.NewGuid().ToString();
-            _userSettings.RuleProfiles.Add(new RuleProfile
+            RuleProfile profile = new RuleProfile
             {
                 Id = newProfileId,
                 Name = newProfileName,
                 Rules = new List<FilterRule>()
-            });
+            };
+            _userSettings.RuleProfiles.Add(profile);
             _userSettings.SelectedProfileId = newProfileId;
             DrawUi();
         }
@@ -95,7 +119,8 @@ namespace NitroCacher.UI
                 Text = caption,
                 StartPosition = FormStartPosition.CenterScreen
             };
-            Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
+            Label textLabel = new Label() { Left = 50, Top = 20, Text = text, Width = 200 };
+            textLabel.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             TextBox textBox = new TextBox() { Left = 50, Top = 50, Width = 400 };
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 70, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
@@ -127,6 +152,34 @@ namespace NitroCacher.UI
         {
             _userSettings.SelectedProfileId = (lstProfiles.SelectedItem as RuleProfile).Id;
             PopulateRulesList();
+            EnableDisableLinks();
+        }
+
+        private void Home_Load(object sender, EventArgs e)
+        {
+            DrawUi();
+        }
+
+        private void chkEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            _userSettings.Enabled = chkEnabled.Checked;
+            _toggleIcon(_userSettings.Enabled);
+        }
+
+
+        private void lstRules_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            ((FilterRule)lstRules.Items[e.Index]).IsEnabled = e.NewValue == CheckState.Checked;
+        }
+
+        private void lstRules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            EnableDisableLinks();
+        }
+
+        private void lnkRemoveRule_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _ruleProfile.Rules.Remove(lstRules.SelectedItem as FilterRule);
         }
     }
 }

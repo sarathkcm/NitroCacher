@@ -21,6 +21,7 @@ namespace NitroCacher.Plugins
         {
             try
             {
+                Directory.CreateDirectory(new FileInfo(_configPath).DirectoryName);
                 return Utils.XmlDeSerialize<T>(File.ReadAllText(_configPath));
             }
             catch
@@ -31,6 +32,7 @@ namespace NitroCacher.Plugins
 
         public void SaveConfig<T>(T config) where T : class
         {
+            Directory.CreateDirectory(new FileInfo(_configPath).DirectoryName);
             File.WriteAllText(_configPath, Utils.XmlSerialize(config));
         }
     }

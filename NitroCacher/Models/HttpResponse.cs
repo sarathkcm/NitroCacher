@@ -15,12 +15,12 @@ namespace NitroCacher.Models
 
         }
      
-        public HttpResponse(List<(string, string)> headers, string body)
+        public HttpResponse(List<Header> headers, string body)
         {
             Headers = headers;
             Body = body;
         }
-        public List<(string, string)> Headers { get; set; }
+        public List<Header> Headers { get; set; }
         public string Body { get; set; }
     }
 }

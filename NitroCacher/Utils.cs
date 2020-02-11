@@ -10,10 +10,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Drawing;
 
 namespace NitroCacher
 {
-    class Utils
+    static class Utils
     {
         public static bool DoesUrlMatch(string url, FilterRule filterRule)
         {
@@ -37,7 +38,7 @@ namespace NitroCacher
         public static string GetHashFromRequest(Session oSession, FilterRule filterRule)
         {
             var headersToIgnore = filterRule.HeadersToIgnore ?? new List<string>();
-            var headers = oSession.RequestHeaders.Where(h => !headersToIgnore.Contains(h.Name)).Select(h => (h.Name, h.Value)).ToList();
+            var headers = oSession.RequestHeaders.Where(h => !headersToIgnore.Contains(h.Name)).Select(h => new Header(h.Name, h.Value)).ToList();
             var request = new HttpRequest(headers, oSession.url, oSession.RequestMethod, oSession.RequestBody);
             var serializedRequest = XmlSerialize(request);
             return ComputeSha256Hash(serializedRequest);
@@ -74,6 +75,19 @@ namespace NitroCacher
             using (var sw = new StringReader(xml))
             {
                 return serializer.Deserialize(sw) as T;
+            }
+        }
+
+        public static Image ToImage(this string base64)
+        {
+            {
+                byte[] bytes = Convert.FromBase64String(base64);
+
+                using (MemoryStream ms = new MemoryStream(bytes))
+                {
+                    return Image.FromStream(ms);
+                }
+
             }
         }
     }

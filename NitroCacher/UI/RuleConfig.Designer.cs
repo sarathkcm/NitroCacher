@@ -171,6 +171,7 @@
             // 
             // pctForegroundColor
             // 
+            this.pctForegroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pctForegroundColor.Location = new System.Drawing.Point(3, 4);
             this.pctForegroundColor.Name = "pctForegroundColor";
             this.pctForegroundColor.Size = new System.Drawing.Size(16, 15);
@@ -180,6 +181,7 @@
             // 
             // pctBackgroundColor
             // 
+            this.pctBackgroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pctBackgroundColor.Location = new System.Drawing.Point(96, 5);
             this.pctBackgroundColor.Name = "pctBackgroundColor";
             this.pctBackgroundColor.Size = new System.Drawing.Size(16, 15);

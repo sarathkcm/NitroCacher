@@ -14,14 +14,14 @@ namespace NitroCacher.Models
         {
 
         }
-        public HttpRequest(List<(string,string)> headers, string url, string method, byte[] body)
+        public HttpRequest(List<Header> headers, string url, string method, byte[] body)
         {
             Headers = headers;
             Url = url;
             Method = method;
             Body = body;
         }
-        public List<(string, string)> Headers { get; set; }
+        public List<Header> Headers { get; set; }
         public string Url { get; set; }
         public string Method { get; set; }
         public byte[] Body { get; set; }
