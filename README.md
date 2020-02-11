@@ -37,7 +37,7 @@ Useful while developing in projects that
  Few features that are planned: 
  - [ ] An installer
  - [ ] Persistant cache
- - [ ] Filter requests further based on HTTP verbs
+ - [ ] Filter requests further using HTTP verbs
  - [ ] Expiration and Cache size limit for the cache.
  - [ ] Display Summary of cache (Number of items, memeory used etc.)
  
