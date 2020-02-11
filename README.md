@@ -35,11 +35,11 @@ Useful while developing in projects that
  ## Contribute
  Bug reports and Pull Requests are welcome. The add-on is not thouroghly tested, and could use some improvements in terms of code and features.
  Few features that are planned: 
- [] An installer
- [] Persistant cache
- [] Filter requests further based on HTTP verbs
- [] Expiration and Cache size limit for the cache.
- [] Display Summary of cache (Number of items, memeory used etc.)
+ - [ ] An installer
+ - [ ] Persistant cache
+ - [ ] Filter requests further based on HTTP verbs
+ - [ ] Expiration and Cache size limit for the cache.
+ - [ ] Display Summary of cache (Number of items, memeory used etc.)
  
  ### Developing
  * Checkout the code
