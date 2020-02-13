@@ -15,7 +15,7 @@ using System.Windows.Forms;
 namespace NitroCacher
 {
 
-   
+
     public class NitroCacher : IAutoTamper
     {
 
@@ -50,8 +50,15 @@ namespace NitroCacher
                 var responseString = firstMatchedRule.Cache.Get<string>(hash);
                 var response = Utils.XmlDeSerialize<HttpResponse>(responseString);
                 response.Headers.ForEach(h => oSession.ResponseHeaders.Add(h.Key, h.Value));
-                oSession["ui-backcolor"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.BackgroundColor.ToArgb()));
-                oSession["ui-color"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.ForegroundColor.ToArgb()));
+                if (firstMatchedRule.FilterRule.IsShownInUi)
+                {
+                    oSession["ui-backcolor"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.BackgroundColor.ToArgb()));
+                    oSession["ui-color"] = ColorTranslator.ToHtml(Color.FromArgb(firstMatchedRule.FilterRule.ForegroundColor.ToArgb()));
+                }
+                else
+                {
+                    oSession["ui-hide"] = "true";
+                }
                 oSession.utilSetResponseBody(response.Body);
                 oSession["NitroCacher.flags.responseServedFromCache"] = "true";
                 matchingRules.ForEach(r => r.Cache.Set(hash, responseString));
@@ -124,7 +131,7 @@ namespace NitroCacher
             Action clearAllCache = () => _cacheRules
                 .ForEach(c => c.Cache.Clear());
 
-        
+
 
             var cacherPage = new TabPage("Nitro Cacher");
 
