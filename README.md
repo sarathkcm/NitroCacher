@@ -3,7 +3,7 @@
 
 Useful while developing in projects that
  * Use rate-limited APIs.
- * Use a lot of API calls that are cached in-memory/in-process in production which gets invalidated between recompiles in your workstation.
+ * Use a lot of API calls that are cached in-memory/in-process, which gets invalidated between recompiles in your development machine.
  
  An out-proc/disk cache baked into the application is probably the right solution to these problems. 
  But chances are that you are already using Fiddler for debugging API calls, and this add-on provides a cheap and re-usable alternative 
