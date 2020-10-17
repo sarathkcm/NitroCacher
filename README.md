@@ -1,5 +1,5 @@
 # 🚀 Nitro Cacher
- [Fiddler](https://www.telerik.com/fiddler) add-on to cache API responses based on rules. 
+ [Fiddler Classic](https://www.telerik.com/fiddler) add-on to cache API responses based on rules. 
 
 Useful while developing in projects that use
  * rate-limited APIs.
